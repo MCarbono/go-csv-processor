@@ -1,5 +1,5 @@
 
-default:
+iterative:
 	go run main.go
 
 iterative-readall:
