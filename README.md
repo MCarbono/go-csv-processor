@@ -4,9 +4,9 @@
 ## 📃 About
 
 This is a basic project to practice GO concurrency/paralellism. The challenge was to read from a CSV file
-several movies and storing each one of them in a database. I developed 6 possible ways of doing it, 4 of them using 
-concurrency. This code is a challenge of the https://app.devgym.com.br/ platform.
-
+several movies and storing each one of them in a database. I developed 3 strategies of doing it, that each one of them has two 
+possible ways of reading the file, totalizing 6 possible manners of doing it, 4 of them using concurrency. 
+This code is a challenge of the https://app.devgym.com.br/ platform.
 
 ## 🗄 Libs/Dependencies
 
@@ -53,6 +53,8 @@ To exclude the database container, use one of the commands below:
 ```
 
 ## ⚙️ Run
+
+Below I explain about the 3 strategies that I developed to complete this challenge. 
 
 ### Iterative
 
