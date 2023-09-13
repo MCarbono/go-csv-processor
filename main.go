@@ -43,9 +43,3 @@ func main() {
 	elapsed := time.Since(start)
 	log.Printf("Binomial took %s", elapsed)
 }
-
-//total com os erros que precisam estar inseridos no banco: 27275
-//ids dos registros com errors:
-//7789
-//51372
-//112809

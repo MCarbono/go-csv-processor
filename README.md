@@ -5,7 +5,7 @@
 
 This is a basic project to practice GO concurrency/paralellism. The challenge was to read from a CSV file
 several movies and storing each one of them in a database. I developed 6 possible ways of doing it, 4 of them using 
-concurrency. This code is a challenge of the https://app.devgym.com.br/ platform
+concurrency. This code is a challenge of the https://app.devgym.com.br/ platform.
 
 
 ## 🗄 Libs/Dependencies
@@ -54,7 +54,11 @@ To exclude the database container, use one of the commands below:
 
 ## ⚙️ Run
 
-Use one of the commands below to run one usecase: 
+### Iterative
+
+![plot](./images/iterative.png)
+
+Use one of the commands below to run one usecase:  
 
 ```bash
     # Makefile command
@@ -66,6 +70,13 @@ Use one of the commands below to run one usecase:
     $ make iterative-readall
 ```
 
+
+### Pipeline Worker
+
+![plot](./images/pipelineWorker.png)
+
+Use one of the commands below to run one usecase:  
+
 ```bash
     # Makefile command
     $ make pipeline-worker-readall
@@ -75,6 +86,12 @@ Use one of the commands below to run one usecase:
     # Makefile command
     $ make pipeline-worker
 ```
+
+### Fan-out Worker
+
+![plot](./images/fanoutWorker.png)
+
+Use one of the commands below to run one usecase:  
 
 ```bash
     # Makefile command
@@ -99,4 +116,3 @@ In the root project folder, run one of the commands below:
     # Go command
     $ go test -bench=. -benchmem
 ```
-
