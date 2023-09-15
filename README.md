@@ -58,6 +58,9 @@ Below I explain about the 3 strategies that I developed to complete this challen
 
 ### Iterative
 
+This strategy don't use any concurrent code. Basically its a iteration over each line of the file,
+instantiating a new entity and saving it into database. 
+
 ![plot](./images/iterative.png)
 
 Use one of the commands below to run one usecase:  
@@ -72,8 +75,14 @@ Use one of the commands below to run one usecase:
     $ make iterative-readall
 ```
 
+<p id="pipeline-worker"></p>
 
 ### Pipeline Worker
+
+This strategy utilizes the benefits of reading the CSV file using Go's concurrency. 
+Before the csv lines is read, its created a pipeline connected by that reads the lines of the csv from a channel.
+The pipeline consists on goroutines. Each square represents one goroutine that performs one action, 
+doing one step of the process. 
 
 ![plot](./images/pipelineWorker.png)
 
@@ -90,6 +99,12 @@ Use one of the commands below to run one usecase:
 ```
 
 ### Fan-out Worker
+
+This strategy utilizes the benefits of reading the CSV file using Go's concurrency. 
+This is a similar strategy of the <a href="#pipeline-worker">Pipeline Worker</a> but in this process
+we only have one goroutine reading the lines of the csv file from a channel, instantiating the entity and
+passing it to another buffered channel that is read from N goroutines that has only one job, save the entity
+to the database.
 
 ![plot](./images/fanoutWorker.png)
 
