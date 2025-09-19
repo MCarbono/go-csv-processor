@@ -1,4 +1,12 @@
+# Build target
+build:
+	go build -o movies-csv-import main.go
 
+# Clean target
+clean:
+	rm -f movies-csv-import
+
+# Development targets (using go run)
 iterative:
 	go run main.go
 
@@ -17,6 +25,25 @@ fanout-worker:
 fanout-worker-readall:
 	go run main.go --usecase=fanout-worker-readall
 
+# Production targets (using built binary)
+run-iterative: build
+	time ./movies-csv-import
+
+run-iterative-readall: build
+	time ./movies-csv-import --usecase=iterative-readall
+
+run-pipeline-worker-readall: build
+	time ./movies-csv-import --usecase=pipeline-worker-readall
+
+run-pipeline-worker: build
+	time ./movies-csv-import --usecase=pipeline-worker-streaming
+
+run-fanout-worker: build
+	time ./movies-csv-import --usecase=fanout-worker
+
+run-fanout-worker-readall: build
+	time ./movies-csv-import --usecase=fanout-worker-readall
+
 db_down:
 	docker compose down 
 
@@ -25,3 +52,7 @@ db_up:
 
 bench:
 	go test -bench=. -benchmem
+
+deps:
+	go mod download
+	go mod tidy
