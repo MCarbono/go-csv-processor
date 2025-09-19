@@ -19,37 +19,33 @@ This code is a challenge of the https://app.devgym.com.br/ platform.
 Clone the github repository:
 
 ```bash
-    $ git clone https://github.com/MCarbono/go-csv-processor.git
+git clone https://github.com/MCarbono/go-csv-processor.git
 ``` 
 
 Go to project's folder
 
 ```bash
-    $ cd go-csv-processor
+cd go-csv-processor
 ```
 
 Start the database with one of the commands below: 
 
 ```bash
-    # docker command
-    $ docker compose up -d
+docker compose up -d
 ```
 
 ```bash
-    # Makefile comando
-    $ make db_up
+make db_up
 ```
 
 To exclude the database container, use one of the commands below: 
 
 ```bash
-    # docker command
-    $ docker compose down
+docker compose down
 ```
 
 ```bash
-    # Makefile command
-    $ make db_down
+make db_down
 ```
 
 ## ⚙️ Run
@@ -66,13 +62,11 @@ instantiating a new entity and saving it into database.
 Use one of the commands below to run one usecase:  
 
 ```bash
-    # Makefile command
-    $ make iterative
+make iterative
 ```
 
 ```bash
-    # Makefile command
-    $ make iterative-readall
+make iterative-readall
 ```
 
 <p id="pipeline-worker"></p>
@@ -89,13 +83,11 @@ doing one step of the process.
 Use one of the commands below to run one usecase:  
 
 ```bash
-    # Makefile command
-    $ make pipeline-worker-readall
+make pipeline-worker-readall
 ```
 
 ```bash
-    # Makefile command
-    $ make pipeline-worker
+make pipeline-worker
 ```
 
 ### Fan-out Worker
@@ -111,13 +103,11 @@ to the database.
 Use one of the commands below to run one usecase:  
 
 ```bash
-    # Makefile command
-    $ make fanout-worker
+make fanout-worker
 ```
 
 ```bash
-    # Makefile command
-    $ make fanout-worker-readall
+make fanout-worker-readall
 ```
 
 ## 🧪 Benchmark
@@ -125,11 +115,9 @@ Use one of the commands below to run one usecase:
 In the root project folder, run one of the commands below:
 
 ```bash
-    # Makefile command
-    $ make bench
+make bench
 ```
 
 ```bash
-    # Go command
-    $ go test -bench=. -benchmem
+go test -bench=. -benchmem
 ```
