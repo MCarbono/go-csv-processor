@@ -24,12 +24,12 @@ func (w *worker) LaunchWorker(in chan []string) {
 	w.Save(w.DataTransform(in))
 }
 
-func (w *worker) DataTransform(in <-chan []string) chan *entity.Movie {
-	out := make(chan *entity.Movie)
+func (w *worker) DataTransform(in <-chan []string) chan entity.Movie {
+	out := make(chan entity.Movie)
 	go func() {
 		defer close(out)
 		for msg := range in {
-			m, err := entity.NewMovie(string(msg[0]), string(msg[1]), string(msg[2]))
+			m, err := entity.NewMovie(msg[0], msg[1], msg[2])
 			if err != nil {
 				fmt.Errorf("error creating movie. %w", err)
 				continue
@@ -40,7 +40,7 @@ func (w *worker) DataTransform(in <-chan []string) chan *entity.Movie {
 	return out
 }
 
-func (w *worker) Save(in <-chan *entity.Movie) {
+func (w *worker) Save(in <-chan entity.Movie) {
 	go func() {
 		defer w.wg.Done()
 		for msg := range in {

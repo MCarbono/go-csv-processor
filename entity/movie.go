@@ -12,23 +12,17 @@ type Movie struct {
 	Genres string
 }
 
-func NewMovie(ID, title, genres string) (*Movie, error) {
-	m := &Movie{
+var findYearRegex = regexp.MustCompile(`\((\d+)\)`)
+
+func NewMovie(ID, title, genres string) (Movie, error) {
+	m := Movie{
 		ID:     ID,
 		Title:  title,
 		Genres: genres,
 	}
-	r, err := regexp.Compile(`\(\d*\)`)
-	if err != nil {
-		return nil, err
-	}
-	year := r.FindString(title)
-	if year != "" {
-		m.Title = r.ReplaceAllString(m.Title, "")
-		m.Title = strings.TrimSpace(m.Title)
-		year = strings.Replace(year, "(", "", 1)
-		year = strings.Replace(year, ")", "", 1)
-		m.Year = year
+	if matches := findYearRegex.FindStringSubmatch(title); len(matches) > 1 {
+		m.Year = matches[1]
+		m.Title = strings.TrimSpace(findYearRegex.ReplaceAllString(title, ""))
 	}
 	return m, nil
 }

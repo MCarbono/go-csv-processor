@@ -6,6 +6,7 @@ import (
 	"movies-csv-import/application/repository"
 	"movies-csv-import/entity"
 	"os"
+	"runtime"
 	"sync"
 )
 
@@ -20,10 +21,10 @@ func NewFanOutWorkerReadAll(movieRepository repository.MovieRepository) *FanOutW
 }
 
 func (uc *FanOutWorkerReadAll) Execute(file *os.File) {
-	inDispatcher := make(chan []string, 100)
-	outDispatcher := make(chan *entity.Movie, 100)
+	totalWorkers := runtime.NumCPU()
+	inDispatcher := make(chan []string, 3*totalWorkers)
+	outDispatcher := make(chan entity.Movie, 3*totalWorkers)
 	go uc.dispatcher(inDispatcher, outDispatcher)
-	totalWorkers := 18
 	var wg sync.WaitGroup
 	wg.Add(totalWorkers)
 	for i := 0; i < totalWorkers; i++ {
@@ -41,10 +42,10 @@ func (uc *FanOutWorkerReadAll) Execute(file *os.File) {
 	wg.Wait()
 }
 
-func (uc *FanOutWorkerReadAll) dispatcher(in chan []string, out chan *entity.Movie) {
+func (uc *FanOutWorkerReadAll) dispatcher(in chan []string, out chan entity.Movie) {
 	defer close(out)
 	for msg := range in {
-		m, err := entity.NewMovie(string(msg[0]), string(msg[1]), string(msg[2]))
+		m, err := entity.NewMovie(msg[0], msg[1], msg[2])
 		if err != nil {
 			fmt.Errorf("error creating movie. %w", err)
 			continue
@@ -53,7 +54,7 @@ func (uc *FanOutWorkerReadAll) dispatcher(in chan []string, out chan *entity.Mov
 	}
 }
 
-func (uc *FanOutWorkerReadAll) worker(in chan *entity.Movie, wg *sync.WaitGroup) {
+func (uc *FanOutWorkerReadAll) worker(in chan entity.Movie, wg *sync.WaitGroup) {
 	defer wg.Done()
 	for msg := range in {
 		if err := uc.movieRepository.Save(msg); err != nil {
