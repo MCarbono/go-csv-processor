@@ -1,6 +1,6 @@
 module movies-csv-import
 
-go 1.18
+go 1.24.2
 
 require github.com/jackc/pgx/v4 v4.18.1
 
