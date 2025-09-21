@@ -52,12 +52,12 @@ func main() {
 		}
 		trace.Stop()
 	}()
-	movieRepository, err := repository.NewMovieRepositoryPostgres(DB)
+	movieRepository, err := repository.NewMovieRepositoryPostgres(DB, 27278)
 	if err != nil {
 		panic(err)
 	}
 	defer movieRepository.Close()
-	uc, err := factory.CreateUseCase(movieRepository, *usecaseType)
+	uc, err := factory.CreateUseCase(movieRepository, *usecaseType, 27278)
 	if err != nil {
 		panic(err)
 	}

@@ -15,7 +15,7 @@ const (
 	FANOUT_WORKER_READALL   = "fanout-worker-readall"
 )
 
-func CreateUseCase(movieRepository repository.MovieRepository, usecaseType string) (usecase.CSVFile, error) {
+func CreateUseCase(movieRepository repository.MovieRepository, usecaseType string, batchSize int) (usecase.CSVFile, error) {
 	if usecaseType == PIPELINE_WORKER_READALL {
 		return usecase.NewPipelineWorkerReadAll(movieRepository), nil
 	}
@@ -26,7 +26,7 @@ func CreateUseCase(movieRepository repository.MovieRepository, usecaseType strin
 		return usecase.NewFanOutWorker(movieRepository), nil
 	}
 	if usecaseType == FANOUT_WORKER_READALL {
-		return usecase.NewFanOutWorkerReadAll(movieRepository), nil
+		return usecase.NewFanOutWorkerReadAll(movieRepository, batchSize), nil
 	}
 	if usecaseType == ITERATIVE_READALL {
 		return usecase.NewIterativeReadAll(movieRepository), nil

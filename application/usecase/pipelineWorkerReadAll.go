@@ -19,7 +19,8 @@ func NewPipelineWorkerReadAll(movieRepository repository.MovieRepository) *Pipel
 }
 
 func (uc *PipelineWorkerReadlAll) Execute(file *os.File) {
-	totalWorkers := runtime.NumCPU() * 2
+	totalWorkers := runtime.GOMAXPROCS(6)
+	// totalWorkers := runtime.NumCPU() * 2
 	dispatcher := NewDispatcher(10 * totalWorkers)
 	var wg sync.WaitGroup
 	wg.Add(totalWorkers)

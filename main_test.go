@@ -158,7 +158,7 @@ func BenchmarkRepositoryWithPreparedStmt(b *testing.B) {
 	defer DB.Close()
 
 	// Your current optimized implementation
-	movieRepository, err := repository.NewMovieRepositoryPostgres(DB)
+	movieRepository, err := repository.NewMovieRepositoryPostgres(DB, 2000)
 	if err != nil {
 		panic(err)
 	}

@@ -23,9 +23,9 @@ func NewFanOutWorker(movieRepository repository.MovieRepository) *FanOutWorker {
 }
 
 func (uc *FanOutWorker) Execute(file *os.File) {
-	totalWorkers := runtime.NumCPU()
-	inDispatcher := make(chan []string, 3*totalWorkers)
-	outDispatcher := make(chan entity.Movie, 3*totalWorkers)
+	totalWorkers := runtime.NumCPU() * 2
+	inDispatcher := make(chan []string, 10*totalWorkers)
+	outDispatcher := make(chan entity.Movie, 10*totalWorkers)
 	go uc.dispatcher(inDispatcher, outDispatcher)
 	var wg sync.WaitGroup
 	wg.Add(totalWorkers)
@@ -70,9 +70,33 @@ func (uc *FanOutWorker) dispatcher(in chan []string, out chan entity.Movie) {
 
 func (uc *FanOutWorker) worker(in chan entity.Movie, wg *sync.WaitGroup) {
 	defer wg.Done()
+	batch := make([]entity.Movie, 0, 1000)
+
 	for msg := range in {
-		if err := uc.movieRepository.Save(msg); err != nil {
-			fmt.Println(err)
+		batch = append(batch, msg)
+
+		// Flush when batch is full
+		if len(batch) >= 1000 {
+			if err := uc.movieRepository.SaveBatch(batch); err != nil {
+				fmt.Printf("Error saving batch: %v\n", err)
+			}
+			batch = batch[:0] // Reset slice but keep capacity
+		}
+	}
+
+	// Channel closed, flush remaining batch if there are items
+	if len(batch) > 0 {
+		if err := uc.movieRepository.SaveBatch(batch); err != nil {
+			fmt.Printf("Error saving batch: %v\n", err)
 		}
 	}
 }
+
+// func (uc *FanOutWorker) worker(in chan entity.Movie, wg *sync.WaitGroup) {
+// 	defer wg.Done()
+// 	for msg := range in {
+// 		if err := uc.movieRepository.Save(msg); err != nil {
+// 			fmt.Println(err)
+// 		}
+// 	}
+// }
