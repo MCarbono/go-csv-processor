@@ -14,18 +14,21 @@ import (
 
 type FanOutWorker struct {
 	movieRepository repository.MovieRepository
+	batchSize       int
 }
 
-func NewFanOutWorker(movieRepository repository.MovieRepository) *FanOutWorker {
+func NewFanOutWorker(movieRepository repository.MovieRepository, batchSize int) *FanOutWorker {
 	return &FanOutWorker{
 		movieRepository: movieRepository,
+		batchSize:       batchSize,
 	}
 }
 
 func (uc *FanOutWorker) Execute(file *os.File) {
-	totalWorkers := runtime.NumCPU() * 2
-	inDispatcher := make(chan []string, 10*totalWorkers)
-	outDispatcher := make(chan entity.Movie, 10*totalWorkers)
+	// totalWorkers := runtime.NumCPU()
+	totalWorkers := runtime.GOMAXPROCS(6)
+	inDispatcher := make(chan []string, 500)
+	outDispatcher := make(chan entity.Movie, 2000)
 	go uc.dispatcher(inDispatcher, outDispatcher)
 	var wg sync.WaitGroup
 	wg.Add(totalWorkers)
@@ -70,13 +73,13 @@ func (uc *FanOutWorker) dispatcher(in chan []string, out chan entity.Movie) {
 
 func (uc *FanOutWorker) worker(in chan entity.Movie, wg *sync.WaitGroup) {
 	defer wg.Done()
-	batch := make([]entity.Movie, 0, 1000)
+	batch := make([]entity.Movie, 0, uc.batchSize)
 
 	for msg := range in {
 		batch = append(batch, msg)
 
 		// Flush when batch is full
-		if len(batch) >= 1000 {
+		if len(batch) >= uc.batchSize {
 			if err := uc.movieRepository.SaveBatch(batch); err != nil {
 				fmt.Printf("Error saving batch: %v\n", err)
 			}

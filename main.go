@@ -35,8 +35,6 @@ func main() {
 		panic(err)
 	}
 
-	// Log initial connection pool stats
-	database.LogPoolStats(DB)
 	f, err = os.Open("movie.csv")
 	if err != nil {
 		panic(err)
@@ -52,18 +50,15 @@ func main() {
 		}
 		trace.Stop()
 	}()
-	movieRepository, err := repository.NewMovieRepositoryPostgres(DB, 27278)
+	batchSize := 1000
+	movieRepository, err := repository.NewMovieRepositoryPostgres(DB, batchSize)
 	if err != nil {
 		panic(err)
 	}
 	defer movieRepository.Close()
-	uc, err := factory.CreateUseCase(movieRepository, *usecaseType, 27278)
+	uc, err := factory.CreateUseCase(movieRepository, *usecaseType, batchSize)
 	if err != nil {
 		panic(err)
 	}
 	uc.Execute(f)
-
-	// Log final connection pool stats
-	fmt.Println("\nFinal connection pool stats:")
-	database.LogPoolStats(DB)
 }

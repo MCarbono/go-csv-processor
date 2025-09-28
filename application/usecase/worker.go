@@ -14,10 +14,11 @@ type WorkerLauncher interface {
 type worker struct {
 	movieRepository repository.MovieRepository
 	wg              *sync.WaitGroup
+	batchSize       int
 }
 
-func NewWorker(movieRepository repository.MovieRepository, wg *sync.WaitGroup) WorkerLauncher {
-	return &worker{movieRepository: movieRepository, wg: wg}
+func NewWorker(movieRepository repository.MovieRepository, wg *sync.WaitGroup, batchSize int) WorkerLauncher {
+	return &worker{movieRepository: movieRepository, wg: wg, batchSize: batchSize}
 }
 
 func (w *worker) LaunchWorker(in chan []string) {
@@ -44,13 +45,13 @@ func (w *worker) Save(in chan entity.Movie) {
 	go func() {
 		defer w.wg.Done()
 
-		batch := make([]entity.Movie, 0, 1000)
+		batch := make([]entity.Movie, 0, w.batchSize)
 
 		for msg := range in {
 			batch = append(batch, msg)
 
 			// Flush when batch is full
-			if len(batch) >= 1000 {
+			if len(batch) >= w.batchSize {
 				if err := w.movieRepository.SaveBatch(batch); err != nil {
 					fmt.Printf("Error saving batch: %v\n", err)
 				}

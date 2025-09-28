@@ -53,6 +53,12 @@ db_up:
 bench:
 	go test -bench=. -benchmem
 
+bench-profile:
+	go test -bench=. -benchmem -cpuprofile=cpu.prof -memprofile=mem.prof
+
+bench-race:
+	go test -bench=. -race
+
 deps:
 	go mod download
 	go mod tidy

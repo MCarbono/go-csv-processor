@@ -10,22 +10,24 @@ import (
 
 type PipelineWorkerReadlAll struct {
 	movieRepository repository.MovieRepository
+	batchSize       int
 }
 
-func NewPipelineWorkerReadAll(movieRepository repository.MovieRepository) *PipelineWorkerReadlAll {
+func NewPipelineWorkerReadAll(movieRepository repository.MovieRepository, batchSize int) *PipelineWorkerReadlAll {
 	return &PipelineWorkerReadlAll{
 		movieRepository: movieRepository,
+		batchSize:       batchSize,
 	}
 }
 
 func (uc *PipelineWorkerReadlAll) Execute(file *os.File) {
-	totalWorkers := runtime.GOMAXPROCS(6)
 	// totalWorkers := runtime.NumCPU() * 2
-	dispatcher := NewDispatcher(10 * totalWorkers)
+	totalWorkers := runtime.GOMAXPROCS(6)
+	dispatcher := NewDispatcher(uc.batchSize)
 	var wg sync.WaitGroup
 	wg.Add(totalWorkers)
 	for i := 0; i < totalWorkers; i++ {
-		worker := NewWorker(uc.movieRepository, &wg)
+		worker := NewWorker(uc.movieRepository, &wg, uc.batchSize)
 		dispatcher.LaunchWorker(worker)
 	}
 	csvReader := csv.NewReader(file)

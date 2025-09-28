@@ -20,7 +20,7 @@ func NewMovieRepositoryPostgres(db *sql.DB, batchSize int) (*MovieRepositoryPost
 		return nil, err
 	}
 	// Pre-prepare batch insert statement for maximum batch size
-	batchInsertStmt, err := db.Prepare(generateBatchQuery(1000))
+	batchInsertStmt, err := db.Prepare(generateBatchQuery(batchSize))
 	if err != nil {
 		return nil, err
 	}

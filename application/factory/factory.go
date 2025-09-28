@@ -17,22 +17,22 @@ const (
 
 func CreateUseCase(movieRepository repository.MovieRepository, usecaseType string, batchSize int) (usecase.CSVFile, error) {
 	if usecaseType == PIPELINE_WORKER_READALL {
-		return usecase.NewPipelineWorkerReadAll(movieRepository), nil
+		return usecase.NewPipelineWorkerReadAll(movieRepository, batchSize), nil
 	}
 	if usecaseType == PIPELINE_WORKER {
-		return usecase.NewPipelineWorker(movieRepository), nil
+		return usecase.NewPipelineWorker(movieRepository, batchSize), nil
 	}
 	if usecaseType == FANOUT_WORKER {
-		return usecase.NewFanOutWorker(movieRepository), nil
+		return usecase.NewFanOutWorker(movieRepository, batchSize), nil
 	}
 	if usecaseType == FANOUT_WORKER_READALL {
 		return usecase.NewFanOutWorkerReadAll(movieRepository, batchSize), nil
 	}
 	if usecaseType == ITERATIVE_READALL {
-		return usecase.NewIterativeReadAll(movieRepository), nil
+		return usecase.NewIterativeReadAll(movieRepository, batchSize), nil
 	}
 	if usecaseType == ITERATIVE {
-		return usecase.NewIterative(movieRepository), nil
+		return usecase.NewIterative(movieRepository, batchSize), nil
 	}
 	return nil, fmt.Errorf("usecase type %v not found", usecaseType)
 }

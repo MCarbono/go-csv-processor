@@ -11,22 +11,24 @@ import (
 
 type IterativeReadAll struct {
 	movieRepository repository.MovieRepository
+	batchSize       int
 }
 
-func NewIterativeReadAll(movieRepository repository.MovieRepository) *IterativeReadAll {
+func NewIterativeReadAll(movieRepository repository.MovieRepository, batchSize int) *IterativeReadAll {
 	return &IterativeReadAll{
 		movieRepository: movieRepository,
+		batchSize:       batchSize,
 	}
 }
 
 func (uc *IterativeReadAll) Execute(file *os.File) {
-	runtime.GOMAXPROCS(1)
+	runtime.GOMAXPROCS(6)
 	csvReader := csv.NewReader(file)
 	rows, err := csvReader.ReadAll()
 	if err != nil {
 		panic(err)
 	}
-	movies := make([]entity.Movie, 0, len(rows))
+	movies := make([]entity.Movie, 0, uc.batchSize)
 	for i := 1; i < len(rows); i++ {
 		movie, err := entity.NewMovie(rows[i][0], rows[i][1], rows[i][2])
 		if err != nil {
@@ -38,7 +40,7 @@ func (uc *IterativeReadAll) Execute(file *os.File) {
 			if err := uc.movieRepository.SaveBatch(movies); err != nil {
 				fmt.Println(err)
 			}
-			movies = make([]entity.Movie, 0, 2000)
+			movies = movies[:0]
 		}
 	}
 	if err := uc.movieRepository.SaveBatch(movies); err != nil {
